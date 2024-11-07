@@ -1,12 +1,12 @@
 {
   "name": "speed-jobbing",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "engines": {
     "node": ">=14.0.0"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "build": "echo 'Build step not required'"
   },
   "dependencies": {
