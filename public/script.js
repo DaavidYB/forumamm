@@ -19,56 +19,64 @@ function generateTimeSlots() {
 }
 
 async function fetchBookings() {
-  try {
-    const response = await fetch('/api/bookings');
-    const bookingsData = await response.json();
-    // Réinitialiser la Map des réservations
-    bookings.clear();
-    
-    // Mise à jour avec les nouvelles données
-    bookingsData.forEach(booking => {
-      const key = `${booking.companyId}-${new Date(booking.timeSlot).getTime()}`;
-      bookings.set(key, booking);
-    });
-    
-    return bookings;
-  } catch (error) {
-    console.error('Error fetching bookings:', error);
-    throw error;
+    try {
+      const response = await fetch('/api/bookings');
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des réservations');
+      }
+      
+      const bookingsData = await response.json();
+      bookings.clear();
+      
+      bookingsData.forEach(booking => {
+        const key = `${booking.companyId}-${new Date(booking.timeSlot).getTime()}`;
+        bookings.set(key, booking);
+      });
+      
+      return bookings;
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+    }
   }
-}
 
 async function createBooking(bookingData) {
-  try {
-    const response = await fetch('/api/bookings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookingData)
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to create booking');
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+      
+      if (response.status === 409) {
+        throw new Error('Ce créneau est déjà réservé');
+      }
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la réservation');
+      }
+      
+      const newBooking = await response.json();
+      
+      // Mettre à jour la Map locale avec le nouveau booking
+      const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
+      bookings.set(key, newBooking);
+      
+      // Forcer un rafraîchissement des réservations
+      await fetchBookings();
+      
+      // Rafraîchir l'affichage
+      await showCompanySlots(newBooking.companyId);
+      
+      return newBooking;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      alert(error.message);
+      throw error;
     }
-    
-    // Attendre la réponse du serveur
-    const newBooking = await response.json();
-    
-    // Mettre à jour la Map locale
-    const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
-    bookings.set(key, newBooking);
-    
-    // Rafraîchir l'affichage
-    showCompanySlots(newBooking.companyId);
-    
-    return newBooking;
-  } catch (error) {
-    console.error('Error creating booking:', error);
-    alert('Une erreur est survenue lors de la réservation');
-    throw error;
   }
-}
 
 function closeModal() {
     document.getElementById('booking-modal').classList.add('hidden');
@@ -103,35 +111,39 @@ async function showBookingModal(companyId, timeStamp) {
     };
 }
 
-// Modification de la fonction showCompanySlots pour utiliser async/await
 async function showCompanySlots(companyId) {
     try {
-        // Rafraîchir les réservations avant d'afficher les créneaux
-        await fetchBookings();
+      await fetchBookings();
+      
+      const company = companies.find(c => c.id === companyId);
+      if (!company) {
+        throw new Error('Entreprise non trouvée');
+      }
+      
+      document.getElementById('company-name').textContent = company.name;
+      
+      const grid = document.getElementById('slots-grid');
+      grid.innerHTML = timeSlots.map(time => {
+        const key = `${companyId}-${time.getTime()}`;
+        const booking = bookings.get(key);
+        const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const isBooked = booking !== undefined;
         
-        const company = companies.find(c => c.id === companyId);
-        document.getElementById('company-name').textContent = company.name;
-        
-        const grid = document.getElementById('slots-grid');
-        grid.innerHTML = timeSlots.map(time => {
-            const key = `${companyId}-${time.getTime()}`;
-            const booking = bookings.get(key);
-            const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const isBooked = booking !== undefined;
-            return `
-                <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${time.getTime()}')"` : ''}>
-                    <h3>${timeStr}</h3>
-                    <p>${isBooked ? booking.studentName : 'Disponible'}</p>
-                </div>
-            `;
-        }).join('');
-
-        showPage('slots-page');
+        return `
+          <div class="slot-card ${isBooked ? 'booked' : ''}" 
+               ${!isBooked ? `onclick="showBookingModal(${companyId}, '${time.getTime()}')"` : ''}>
+            <h3>${timeStr}</h3>
+            <p>${isBooked ? booking.studentName : 'Disponible'}</p>
+          </div>
+        `;
+      }).join('');
+  
+      showPage('slots-page');
     } catch (error) {
-        console.error('Error showing company slots:', error);
-        alert('Une erreur est survenue lors du chargement des créneaux');
+      console.error('Error showing company slots:', error);
+      alert('Une erreur est survenue lors du chargement des créneaux');
     }
-}
+  }
 
 // Initialisation avec gestion d'erreur
 document.addEventListener('DOMContentLoaded', async () => {

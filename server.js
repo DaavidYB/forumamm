@@ -59,14 +59,29 @@ const Company = mongoose.model('Company', {
   logo: String
 });
 
-// Dans la définition du modèle Booking
-const Booking = mongoose.model('Booking', {
-    companyId: Number,
-    timeSlot: { type: Date, index: true },
-    studentName: String,
+const BookingSchema = new mongoose.Schema({
+    companyId: {
+      type: Number,
+      required: true
+    },
+    timeSlot: {
+      type: Date,
+      required: true
+    },
+    studentName: {
+      type: String,
+      required: true
+    },
     studentClass: String,
     searchType: String
-  });
+}, {
+    timestamps: true
+});
+  
+// Index composé unique pour éviter les doubles réservations
+BookingSchema.index({ companyId: 1, timeSlot: 1 }, { unique: true });
+  
+const Booking = mongoose.model('Booking', BookingSchema);
 
 /*const Booking = mongoose.model('Booking', {
   companyId: Number,
@@ -86,14 +101,33 @@ app.get('/api/companies', async (req, res) => {
   }
 });
 
-app.get('/api/bookings', async (req, res) => {
-  try {
-    const bookings = await Booking.find();
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.post('/api/bookings', async (req, res) => {
+    try {
+      // Vérifier si le créneau est déjà réservé
+      const existingBooking = await Booking.findOne({
+        companyId: req.body.companyId,
+        timeSlot: new Date(req.body.timeSlot)
+      });
+  
+      if (existingBooking) {
+        return res.status(409).json({ 
+          message: 'Ce créneau est déjà réservé' 
+        });
+      }
+  
+      const booking = new Booking(req.body);
+      await booking.save();
+      res.status(201).json(booking);
+    } catch (error) {
+      if (error.code === 11000) { // Erreur de duplicate key
+        res.status(409).json({ 
+          message: 'Ce créneau est déjà réservé' 
+        });
+      } else {
+        res.status(400).json({ message: error.message });
+      }
+    }
+  });
 
 app.post('/api/bookings', async (req, res) => {
   try {
