@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Jobbing - Forum des Entreprises</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Page d'accueil -->
+    <div class="page" id="home-page">
+        <div class="glass-card main-card">
+            <h1>Speed-jobbing</h1>
+            <h2>Forum des Entreprises</h2>
+            <button class="glass-button" onclick="showPage('companies-page')">M'inscrire</button>
+        </div>
+        <img src="assets/amm-logo.png" alt="AMM Logo" class="phoenix-logo">
+    </div>
+
+    <!-- Page des entreprises -->
+    <div class="page hidden" id="companies-page">
+        <div class="header">
+            <h1>Entreprises</h1>
+        </div>
+        <div class="companies-grid" id="companies-grid">
+            <!-- Les entreprises seront ajoutées dynamiquement ici -->
+        </div>
+        <img src="assets/amm-logo.png" alt="AMM Logo" class="phoenix-logo">
+    </div>
+
+    <!-- Page des créneaux -->
+    <div class="page hidden" id="slots-page">
+        <div class="header">
+            <h1 id="company-name"></h1>
+            <button class="glass-button back-button" onclick="showPage('companies-page')">←</button>
+        </div>
+        <div class="slots-grid" id="slots-grid">
+            <!-- Les créneaux seront ajoutés dynamiquement ici -->
+        </div>
+        <img src="assets/amm-logo.png" alt="AMM Logo" class="phoenix-logo">
+    </div>
+
+    <!-- Modal d'inscription -->
+    <div class="modal hidden" id="booking-modal">
+        <div class="glass-card modal-content">
+            <h2>Réserver un créneau</h2>
+            <form id="booking-form">
+                <input type="text" name="lastName" placeholder="Nom" required>
+                <input type="text" name="firstName" placeholder="Prénom" required>
+                <input type="text" name="class" placeholder="Classe" required>
+                <select name="searchType" required>
+                    <option value="">Type de recherche</option>
+                    <option value="alternance">Alternance</option>
+                    <option value="stage">Stage</option>
+                    <option value="emploi">Emploi</option>
+                </select>
+                <div class="modal-buttons">
+                    <button type="button" class="glass-button" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="glass-button">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
