@@ -97,6 +97,7 @@ function showBookingModal(companyId, timeStamp) {
         
         await createBooking(bookingData);
         closeModal();
+        fetchBookings();
         showCompanySlots(companyId);
     };
 }
