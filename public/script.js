@@ -18,6 +18,39 @@ function generateTimeSlots() {
     return slots;
 }
 
+async function fetchCompanies() {
+    try {
+        const response = await fetch('/api/companies');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        companies = data; // Met à jour la variable globale
+        return data;
+    } catch (error) {
+        console.error('Error fetching companies:', error);
+        throw error;
+    }
+}
+
+function showPage(pageId) {
+    try {
+        // Cache toutes les pages
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.add('hidden');
+        });
+        // Affiche la page demandée
+        const pageToShow = document.getElementById(pageId);
+        if (!pageToShow) {
+            throw new Error(`Page ${pageId} non trouvée`);
+        }
+        pageToShow.classList.remove('hidden');
+    } catch (error) {
+        console.error('Erreur dans showPage:', error);
+        throw error;
+    }
+}
+
 async function fetchBookings() {
     try {
       const response = await fetch('/api/bookings');
@@ -110,6 +143,7 @@ async function showBookingModal(companyId, timeStamp) {
         }
     };
 }
+
 
 async function showCompanySlots(companyId) {
     try {

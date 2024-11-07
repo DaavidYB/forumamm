@@ -146,13 +146,13 @@ app.get('*', (req, res) => {
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {
-    console.error('🔴 Erreur:', err);
+    console.error('🔴 Erreur détaillée:', err);
     res.status(500).json({
-      error: process.env.NODE_ENV === 'production' 
-        ? 'Une erreur est survenue' 
-        : err.message
+        error: process.env.NODE_ENV === 'production' 
+            ? 'Une erreur est survenue' 
+            : `${err.message} - ${err.stack}`
     });
-  });
+});
   
 const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
