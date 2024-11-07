@@ -137,7 +137,7 @@ app.post('/api/bookings', async (req, res) => {
     }
   });
 
-app.post('/api/bookings', async (req, res) => {
+/*app.post('/api/bookings', async (req, res) => {
   try {
     const booking = new Booking(req.body);
     await booking.save();
@@ -145,7 +145,7 @@ app.post('/api/bookings', async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-});
+});*/
 
 // Route pour servir l'application frontend
 app.get('*', (req, res) => {
