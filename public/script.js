@@ -1,18 +1,18 @@
 // script.js
+const REFERENCE_DATE = new Date('2024-11-14');
+REFERENCE_DATE.setHours(0, 0, 0, 0);
+
 let companies = [];
 let bookings = new Map();
 let timeSlots = [];
 
+
 function generateTimeSlots() {
     const slots = [];
-    // On crée une date fixe pour aujourd'hui à 00:00
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
     
-    // On crée nos créneaux à partir de cette date de référence
-    const startTime = new Date(today);
+    const startTime = new Date(REFERENCE_DATE);
     startTime.setHours(10, 0, 0);
-    const endTime = new Date(today);
+    const endTime = new Date(REFERENCE_DATE);
     endTime.setHours(12, 0, 0);
 
     let currentTime = new Date(startTime);
@@ -24,14 +24,11 @@ function generateTimeSlots() {
     return slots;
 }
 
+// Fonction utilitaire pour normaliser une date en utilisant la date de référence
 function normalizeTimeSlot(date) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const timeSlot = new Date(today);
-    timeSlot.setHours(date.getHours(), date.getMinutes(), 0, 0);
-    
-    return timeSlot;
+    const normalizedDate = new Date(REFERENCE_DATE);
+    normalizedDate.setHours(date.getHours(), date.getMinutes(), 0, 0);
+    return normalizedDate;
 }
 
 // Gestion de la navigation

@@ -5,6 +5,9 @@ const path = require('path');
 
 const app = express();
 
+const REFERENCE_DATE = new Date('2024-11-14');
+REFERENCE_DATE.setHours(0, 0, 0, 0);
+
 // Configuration pour la production
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -59,13 +62,32 @@ const Company = mongoose.model('Company', {
   logo: String
 });
 
-const Booking = mongoose.model('Booking', {
+/*const Booking = mongoose.model('Booking', {
   companyId: Number,
   timeSlot: Date,
   studentName: String,
   studentClass: String,
   searchType: String
+});*/
+const bookingSchema = new mongoose.Schema({
+    companyId: Number,
+    timeSlot: Date,
+    studentName: String,
+    studentClass: String,
+    searchType: String
 });
+  
+// Middleware pour normaliser la date avant la sauvegarde
+bookingSchema.pre('save', function(next) {
+const date = new Date(this.timeSlot);
+const normalizedDate = new Date(REFERENCE_DATE);
+normalizedDate.setHours(date.getHours(), date.getMinutes(), 0, 0);
+
+this.timeSlot = normalizedDate;
+next();
+});
+  
+const Booking = mongoose.model('Booking', bookingSchema);
 
 // Routes API
 app.get('/api/companies', async (req, res) => {
