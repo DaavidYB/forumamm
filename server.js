@@ -59,28 +59,36 @@ const Company = mongoose.model('Company', {
   logo: String
 });
 
+// Dans server.js, remplacer le modèle Booking actuel par :
 const BookingSchema = new mongoose.Schema({
     companyId: {
-      type: Number,
-      required: true
+        type: Number,
+        required: true
     },
     timeSlot: {
-      type: Date,
-      required: true
+        type: Date,
+        required: true,
+        transform: function(v) {
+            return new Date(v);
+        }
     },
     studentName: {
-      type: String,
-      required: true
+        type: String,
+        required: true
     },
-    studentClass: String,
-    searchType: String
-}, {
-    timestamps: true
+    studentClass: {
+        type: String,
+        required: true
+    },
+    searchType: {
+        type: String,
+        required: true,
+        enum: ['Alternance', 'Stage', 'Emploi'] // Valeurs autorisées
+    }
 });
-  
-// Index composé unique pour éviter les doubles réservations
+
 BookingSchema.index({ companyId: 1, timeSlot: 1 }, { unique: true });
-  
+
 const Booking = mongoose.model('Booking', BookingSchema);
 
 /*const Booking = mongoose.model('Booking', {

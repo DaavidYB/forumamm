@@ -95,43 +95,41 @@ async function fetchBookings() {
     }
   }
 
-async function createBooking(bookingData) {
+  async function createBooking(bookingData) {
     try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData)
-      });
-      
-      if (response.status === 409) {
-        throw new Error('Ce créneau est déjà réservé');
-      }
-      
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création de la réservation');
-      }
-      
-      const newBooking = await response.json();
-      
-      // Mettre à jour la Map locale avec le nouveau booking
-      const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
-      bookings.set(key, newBooking);
-      
-      // Forcer un rafraîchissement des réservations
-      await fetchBookings();
-      
-      // Rafraîchir l'affichage
-      await showCompanySlots(newBooking.companyId);
-      
-      return newBooking;
+        // S'assurer que timeSlot est un objet Date valide
+        bookingData.timeSlot = new Date(bookingData.timeSlot);
+        
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...bookingData,
+                timeSlot: bookingData.timeSlot.toISOString() // Convertir en format ISO
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Erreur lors de la création de la réservation');
+        }
+
+        const newBooking = await response.json();
+        const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
+        bookings.set(key, newBooking);
+
+        await fetchBookings();
+        showCompanySlots(newBooking.companyId);
+
+        return newBooking;
     } catch (error) {
-      console.error('Error creating booking:', error);
-      alert(error.message);
-      throw error;
+        console.error('Error creating booking:', error);
+        alert(error.message);
+        throw error;
     }
-  }
+}
 
 function closeModal() {
     document.getElementById('booking-modal').classList.add('hidden');
