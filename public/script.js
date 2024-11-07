@@ -33,6 +33,28 @@ async function fetchCompanies() {
     }
 }
 
+function renderCompanies() {
+    const grid = document.getElementById('companies-grid');
+    grid.innerHTML = companies.map(company => `
+        <div class="company-wrapper">
+            <div class="company-card" onclick="showCompanySlots(${company.id})">
+                <img src="${company.logo}" alt="${company.name}">
+            </div>
+            <div class="company-name">${company.name}</div>
+        </div>
+    `).join('');
+}
+
+async function fetchCompanies() {
+    try {
+      const response = await fetch('/api/companies');
+      companies = await response.json();
+      renderCompanies();
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+    }
+  }
+
 function showPage(pageId) {
     try {
         // Cache toutes les pages
