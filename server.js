@@ -79,12 +79,12 @@ const bookingSchema = new mongoose.Schema({
   
 // Middleware pour normaliser la date avant la sauvegarde
 bookingSchema.pre('save', function(next) {
-const date = new Date(this.timeSlot);
-const normalizedDate = new Date(REFERENCE_DATE);
-normalizedDate.setHours(date.getHours(), date.getMinutes(), 0, 0);
+    const date = new Date(this.timeSlot);
+    const normalizedDate = new Date(REFERENCE_DATE);
+    normalizedDate.setHours(date.getHours(), date.getMinutes(), 0, 0);
 
-this.timeSlot = normalizedDate;
-next();
+    this.timeSlot = normalizedDate;
+    next();
 });
   
 const Booking = mongoose.model('Booking', bookingSchema);
