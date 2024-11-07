@@ -1,21 +1,37 @@
 // script.js
 let companies = [];
 let bookings = new Map();
-
-const timeSlots = generateTimeSlots();
+let timeSlots = [];
 
 function generateTimeSlots() {
     const slots = [];
-    const startTime = new Date();
+    // On crée une date fixe pour aujourd'hui à 00:00
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // On crée nos créneaux à partir de cette date de référence
+    const startTime = new Date(today);
     startTime.setHours(10, 0, 0);
-    const endTime = new Date();
+    const endTime = new Date(today);
     endTime.setHours(12, 0, 0);
 
-    while (startTime < endTime) {
-        slots.push(new Date(startTime));
-        startTime.setMinutes(startTime.getMinutes() + 10);
+    let currentTime = new Date(startTime);
+    
+    while (currentTime < endTime) {
+        slots.push(new Date(currentTime));
+        currentTime.setMinutes(currentTime.getMinutes() + 10);
     }
     return slots;
+}
+
+function normalizeTimeSlot(date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const timeSlot = new Date(today);
+    timeSlot.setHours(date.getHours(), date.getMinutes(), 0, 0);
+    
+    return timeSlot;
 }
 
 // Gestion de la navigation
@@ -42,10 +58,16 @@ async function fetchBookings() {
     try {
         const response = await fetch('/api/bookings');
         const bookingsData = await response.json();
-        bookings.clear(); // Nettoyer la Map avant de la remplir
+        bookings.clear();
+        
         bookingsData.forEach(booking => {
-            bookings.set(`${booking.companyId}-${new Date(booking.timeSlot).getTime()}`, booking);
+            // Normaliser la date du booking pour la comparaison
+            const bookingDate = new Date(booking.timeSlot);
+            const normalizedDate = normalizeTimeSlot(bookingDate);
+            const key = `${booking.companyId}-${normalizedDate.getTime()}`;
+            bookings.set(key, booking);
         });
+        
         return bookings;
     } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -54,6 +76,9 @@ async function fetchBookings() {
 
 async function createBooking(bookingData) {
     try {
+        // Normaliser la date avant l'envoi
+        bookingData.timeSlot = normalizeTimeSlot(new Date(bookingData.timeSlot));
+        
         const response = await fetch('/api/bookings', {
             method: 'POST',
             headers: {
@@ -66,7 +91,7 @@ async function createBooking(bookingData) {
             throw new Error('Failed to create booking');
         }
         
-        await fetchBookings(); // Recharger les réservations après création
+        await fetchBookings();
     } catch (error) {
         console.error('Error creating booking:', error);
         alert('Une erreur est survenue lors de la réservation');
@@ -96,7 +121,7 @@ function showBookingModal(companyId, timeStamp) {
         
         await createBooking(bookingData);
         closeModal();
-        await showCompanySlots(companyId); // Attendre la mise à jour et recharger les créneaux
+        await showCompanySlots(companyId);
     };
 }
 
@@ -117,15 +142,17 @@ async function showCompanySlots(companyId) {
     const company = companies.find(c => c.id === companyId);
     document.getElementById('company-name').textContent = company.name;
     
-    await fetchBookings(); // Recharger les réservations avant d'afficher les créneaux
+    await fetchBookings();
     
     const grid = document.getElementById('slots-grid');
     grid.innerHTML = timeSlots.map(time => {
-        const booking = bookings.get(`${companyId}-${time.getTime()}`);
+        const normalizedTime = normalizeTimeSlot(time);
+        const booking = bookings.get(`${companyId}-${normalizedTime.getTime()}`);
         const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         const isBooked = booking !== undefined;
+        
         return `
-            <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${time.getTime()}')"` : ''}>
+            <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${normalizedTime.getTime()}')"` : ''}>
                 <h3>${timeStr}</h3>
                 <p>${isBooked ? booking.studentName : 'Disponible'}</p>
             </div>
@@ -137,7 +164,8 @@ async function showCompanySlots(companyId) {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', async () => {
-    await fetchBookings(); // Charger les réservations au démarrage
+    timeSlots = generateTimeSlots(); // Générer les créneaux une seule fois au chargement
+    await fetchBookings();
     await showPage('home-page');
     await fetchCompanies();
 });
