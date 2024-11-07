@@ -18,117 +18,56 @@ function generateTimeSlots() {
     return slots;
 }
 
-async function fetchCompanies() {
-    try {
-        const response = await fetch('/api/companies');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        companies = data; // Met à jour la variable globale
-        return data;
-    } catch (error) {
-        console.error('Error fetching companies:', error);
-        throw error;
-    }
-}
-
-function renderCompanies() {
-    const grid = document.getElementById('companies-grid');
-    grid.innerHTML = companies.map(company => `
-        <div class="company-wrapper">
-            <div class="company-card" onclick="showCompanySlots(${company.id})">
-                <img src="${company.logo}" alt="${company.name}">
-            </div>
-            <div class="company-name">${company.name}</div>
-        </div>
-    `).join('');
-}
-
-async function fetchCompanies() {
-    try {
-      const response = await fetch('/api/companies');
-      companies = await response.json();
-      renderCompanies();
-    } catch (error) {
-      console.error('Error fetching companies:', error);
-    }
-  }
-
-function showPage(pageId) {
-    try {
-        // Cache toutes les pages
-        document.querySelectorAll('.page').forEach(page => {
-            page.classList.add('hidden');
-        });
-        // Affiche la page demandée
-        const pageToShow = document.getElementById(pageId);
-        if (!pageToShow) {
-            throw new Error(`Page ${pageId} non trouvée`);
-        }
-        pageToShow.classList.remove('hidden');
-    } catch (error) {
-        console.error('Erreur dans showPage:', error);
-        throw error;
-    }
-}
-
 async function fetchBookings() {
-    try {
-      const response = await fetch('/api/bookings');
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des réservations');
-      }
-      
-      const bookingsData = await response.json();
-      bookings.clear();
-      
-      bookingsData.forEach(booking => {
-        const key = `${booking.companyId}-${new Date(booking.timeSlot).getTime()}`;
-        bookings.set(key, booking);
-      });
-      
-      return bookings;
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      throw error;
-    }
+  try {
+    const response = await fetch('/api/bookings');
+    const bookingsData = await response.json();
+    // Réinitialiser la Map des réservations
+    bookings.clear();
+    
+    // Mise à jour avec les nouvelles données
+    bookingsData.forEach(booking => {
+      const key = `${booking.companyId}-${new Date(booking.timeSlot).getTime()}`;
+      bookings.set(key, booking);
+    });
+    
+    return bookings;
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    throw error;
   }
+}
 
-  async function createBooking(bookingData) {
-    try {
-        // S'assurer que timeSlot est un objet Date valide
-        bookingData.timeSlot = new Date(bookingData.timeSlot);
-        
-        const response = await fetch('/api/bookings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                ...bookingData,
-                timeSlot: bookingData.timeSlot.toISOString() // Convertir en format ISO
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Erreur lors de la création de la réservation');
-        }
-
-        const newBooking = await response.json();
-        const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
-        bookings.set(key, newBooking);
-
-        await fetchBookings();
-        showCompanySlots(newBooking.companyId);
-
-        return newBooking;
-    } catch (error) {
-        console.error('Error creating booking:', error);
-        alert(error.message);
-        throw error;
+async function createBooking(bookingData) {
+  try {
+    const response = await fetch('/api/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookingData)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to create booking');
     }
+    
+    // Attendre la réponse du serveur
+    const newBooking = await response.json();
+    
+    // Mettre à jour la Map locale
+    const key = `${newBooking.companyId}-${new Date(newBooking.timeSlot).getTime()}`;
+    bookings.set(key, newBooking);
+    
+    // Rafraîchir l'affichage
+    showCompanySlots(newBooking.companyId);
+    
+    return newBooking;
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    alert('Une erreur est survenue lors de la réservation');
+    throw error;
+  }
 }
 
 function closeModal() {
@@ -164,58 +103,46 @@ async function showBookingModal(companyId, timeStamp) {
     };
 }
 
-
+// Modification de la fonction showCompanySlots pour utiliser async/await
 async function showCompanySlots(companyId) {
     try {
-      await fetchBookings();
-      
-      const company = companies.find(c => c.id === companyId);
-      if (!company) {
-        throw new Error('Entreprise non trouvée');
-      }
-      
-      document.getElementById('company-name').textContent = company.name;
-      
-      const grid = document.getElementById('slots-grid');
-      grid.innerHTML = timeSlots.map(time => {
-        const key = `${companyId}-${time.getTime()}`;
-        const booking = bookings.get(key);
-        const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        const isBooked = booking !== undefined;
+        // Rafraîchir les réservations avant d'afficher les créneaux
+        await fetchBookings();
         
-        return `
-          <div class="slot-card ${isBooked ? 'booked' : ''}" 
-               ${!isBooked ? `onclick="showBookingModal(${companyId}, '${time.getTime()}')"` : ''}>
-            <h3>${timeStr}</h3>
-            <p>${isBooked ? booking.studentName : 'Disponible'}</p>
-          </div>
-        `;
-      }).join('');
-  
-      showPage('slots-page');
-    } catch (error) {
-      console.error('Error showing company slots:', error);
-      alert('Une erreur est survenue lors du chargement des créneaux');
-    }
-  }
+        const company = companies.find(c => c.id === companyId);
+        document.getElementById('company-name').textContent = company.name;
+        
+        const grid = document.getElementById('slots-grid');
+        grid.innerHTML = timeSlots.map(time => {
+            const key = `${companyId}-${time.getTime()}`;
+            const booking = bookings.get(key);
+            const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const isBooked = booking !== undefined;
+            return `
+                <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${time.getTime()}')"` : ''}>
+                    <h3>${timeStr}</h3>
+                    <p>${isBooked ? booking.studentName : 'Disponible'}</p>
+                </div>
+            `;
+        }).join('');
 
+        showPage('slots-page');
+    } catch (error) {
+        console.error('Error showing company slots:', error);
+        alert('Une erreur est survenue lors du chargement des créneaux');
+    }
+}
+
+// Initialisation avec gestion d'erreur
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         showPage('home-page');
-        console.log('Début du chargement...');
-        const [companiesResult, bookingsResult] = await Promise.all([
-            fetchCompanies().catch(e => {
-                console.error('Erreur fetchCompanies:', e);
-                throw e;
-            }),
-            fetchBookings().catch(e => {
-                console.error('Erreur fetchBookings:', e);
-                throw e;
-            })
+        await Promise.all([
+            fetchCompanies(),
+            fetchBookings()
         ]);
-        console.log('Chargement terminé:', { companiesResult, bookingsResult });
     } catch (error) {
-        console.error('Erreur détaillée:', error);
-        alert('Une erreur est survenue lors du chargement initial: ' + error.message);
+        console.error('Initialization error:', error);
+        alert('Une erreur est survenue lors du chargement initial');
     }
 });

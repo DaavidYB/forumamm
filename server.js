@@ -59,37 +59,14 @@ const Company = mongoose.model('Company', {
   logo: String
 });
 
-// Dans server.js, remplacer le modèle Booking actuel par :
-const BookingSchema = new mongoose.Schema({
-    companyId: {
-        type: Number,
-        required: true
-    },
-    timeSlot: {
-        type: Date,
-        required: true,
-        transform: function(v) {
-            return new Date(v);
-        }
-    },
-    studentName: {
-        type: String,
-        required: true
-    },
-    studentClass: {
-        type: String,
-        required: true
-    },
-    searchType: {
-        type: String,
-        required: true,
-        enum: ['Alternance', 'Stage', 'Emploi'] // Valeurs autorisées
-    }
-});
-
-BookingSchema.index({ companyId: 1, timeSlot: 1 }, { unique: true });
-
-const Booking = mongoose.model('Booking', BookingSchema);
+// Dans la définition du modèle Booking
+const Booking = mongoose.model('Booking', {
+    companyId: Number,
+    timeSlot: { type: Date, index: true },
+    studentName: String,
+    studentClass: String,
+    searchType: String
+  });
 
 /*const Booking = mongoose.model('Booking', {
   companyId: Number,
@@ -109,35 +86,16 @@ app.get('/api/companies', async (req, res) => {
   }
 });
 
-app.post('/api/bookings', async (req, res) => {
-    try {
-      // Vérifier si le créneau est déjà réservé
-      const existingBooking = await Booking.findOne({
-        companyId: req.body.companyId,
-        timeSlot: new Date(req.body.timeSlot)
-      });
-  
-      if (existingBooking) {
-        return res.status(409).json({ 
-          message: 'Ce créneau est déjà réservé' 
-        });
-      }
-  
-      const booking = new Booking(req.body);
-      await booking.save();
-      res.status(201).json(booking);
-    } catch (error) {
-      if (error.code === 11000) { // Erreur de duplicate key
-        res.status(409).json({ 
-          message: 'Ce créneau est déjà réservé' 
-        });
-      } else {
-        res.status(400).json({ message: error.message });
-      }
-    }
-  });
+app.get('/api/bookings', async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-/*app.post('/api/bookings', async (req, res) => {
+app.post('/api/bookings', async (req, res) => {
   try {
     const booking = new Booking(req.body);
     await booking.save();
@@ -145,7 +103,7 @@ app.post('/api/bookings', async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-});*/
+});
 
 // Route pour servir l'application frontend
 app.get('*', (req, res) => {
@@ -154,13 +112,13 @@ app.get('*', (req, res) => {
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {
-    console.error('🔴 Erreur détaillée:', err);
+    console.error('🔴 Erreur:', err);
     res.status(500).json({
-        error: process.env.NODE_ENV === 'production' 
-            ? 'Une erreur est survenue' 
-            : `${err.message} - ${err.stack}`
+      error: process.env.NODE_ENV === 'production' 
+        ? 'Une erreur est survenue' 
+        : err.message
     });
-});
+  });
   
 const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
