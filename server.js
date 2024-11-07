@@ -4,38 +4,53 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-app.use(cors());
+
+// Configuration pour la production
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://votre-app.onrender.com' 
+    : 'http://localhost:3000'
+}));
 app.use(express.json());
 app.use(express.static('public'));
 
-// Configuration MongoDB avec gestion d'erreurs
-const connectDB = async () => {
-    try {
-        const mongoURI = process.env.MONGODB_URI;
-
-        if (!mongoURI) {
-            throw new Error('La variable d\'environnement MONGODB_URI n\'est pas définie');
-        }
-
-        await mongoose.connect(mongoURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-
-        console.log('✅ Connecté à MongoDB avec succès');
-    } catch (error) {
-        console.error('❌ Erreur de connexion MongoDB:', error.message);
-        // Afficher l'URI (en masquant le mot de passe pour la sécurité)
-        const safeURI = process.env.MONGODB_URI ? 
-            process.env.MONGODB_URI.replace(/:([^@]+)@/, ':****@') : 
-            'non défini';
-        console.log('URI MongoDB utilisé:', safeURI);
-        process.exit(1);
-    }
+// Connexion MongoDB avec retry
+const connectWithRetry = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      retryWrites: true,
+    });
+    console.log('✅ MongoDB connecté');
+  } catch (err) {
+    console.error('❌ Erreur MongoDB:', err);
+    console.log('🔄 Nouvelle tentative dans 5s...');
+    setTimeout(connectWithRetry, 5000);
+  }
 };
 
-// Appeler la connexion
-connectDB();
+connectWithRetry();
+
+// Gestion des erreurs MongoDB
+mongoose.connection.on('error', err => {
+  console.error('🔴 Erreur MongoDB:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('🔌 MongoDB déconnecté');
+  connectWithRetry();
+});
+
+// Route de santé pour Render
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date(),
+    mongoStatus: mongoose.connection.readyState
+  });
+});
 
 // Modèles
 const Company = mongoose.model('Company', {
@@ -86,7 +101,17 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Gestion des erreurs
+app.use((err, req, res, next) => {
+    console.error('🔴 Erreur:', err);
+    res.status(500).json({
+      error: process.env.NODE_ENV === 'production' 
+        ? 'Une erreur est survenue' 
+        : err.message
+    });
+  });
+  
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
