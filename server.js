@@ -59,22 +59,13 @@ const Company = mongoose.model('Company', {
   logo: String
 });
 
-// Dans la définition du modèle Booking
 const Booking = mongoose.model('Booking', {
-    companyId: Number,
-    timeSlot: { type: Date, index: true },
-    studentName: String,
-    studentClass: String,
-    searchType: String
-  });
-
-/*const Booking = mongoose.model('Booking', {
   companyId: Number,
   timeSlot: Date,
   studentName: String,
   studentClass: String,
   searchType: String
-});*/
+});
 
 // Routes API
 app.get('/api/companies', async (req, res) => {
