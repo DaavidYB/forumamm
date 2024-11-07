@@ -179,16 +179,23 @@ async function showCompanySlots(companyId) {
     }
   }
 
-// Initialisation avec gestion d'erreur
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         showPage('home-page');
-        await Promise.all([
-            fetchCompanies(),
-            fetchBookings()
+        console.log('Début du chargement...');
+        const [companiesResult, bookingsResult] = await Promise.all([
+            fetchCompanies().catch(e => {
+                console.error('Erreur fetchCompanies:', e);
+                throw e;
+            }),
+            fetchBookings().catch(e => {
+                console.error('Erreur fetchBookings:', e);
+                throw e;
+            })
         ]);
+        console.log('Chargement terminé:', { companiesResult, bookingsResult });
     } catch (error) {
-        console.error('Initialization error:', error);
-        alert('Une erreur est survenue lors du chargement initial');
+        console.error('Erreur détaillée:', error);
+        alert('Une erreur est survenue lors du chargement initial: ' + error.message);
     }
 });
