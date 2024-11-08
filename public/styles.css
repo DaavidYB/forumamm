@@ -74,11 +74,10 @@ h2 {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
 }
 
 .header h1 {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 /* Nouvelle classe pour la disposition des boutons */
