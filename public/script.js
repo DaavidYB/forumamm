@@ -13,7 +13,7 @@ function generateTimeSlots() {
     const startTime = new Date(REFERENCE_DATE);
     startTime.setHours(10, 0, 0);
     const endTime = new Date(REFERENCE_DATE);
-    endTime.setHours(12, 0, 0);
+    endTime.setHours(11, 0, 0);
 
     let currentTime = new Date(startTime);
     
