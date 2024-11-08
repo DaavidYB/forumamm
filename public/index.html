@@ -35,9 +35,12 @@
         
         <div class="header">
             <h1 id="company-name"></h1>
-            <button class="glass-button offer-button" onclick="">Voir l'offre</button>
-            <button class="back-button glass-button" onclick="showPage('companies-page')">←</button>
+            <div class="buttons-container">
+                <button class="glass-button offer-button" onclick="openOffer()">Voir l'offre</button>
+                <button class="back-button glass-button" onclick="showPage('companies-page')">←</button>
+            </div>
         </div>
+        
         <div class="slots-grid" id="slots-grid">
             <!-- Les créneaux seront ajoutés dynamiquement ici -->
         </div>
