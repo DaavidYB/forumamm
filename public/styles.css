@@ -80,7 +80,6 @@ h2 {
     margin-bottom: 1rem;
 }
 
-/* Nouvelle classe pour la disposition des boutons */
 .buttons-container {
     display: flex;
     justify-content: space-between;
@@ -276,6 +275,12 @@ h2 {
     h2 {
         font-size: 1.2rem;
         margin-bottom: 1.5rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
     .main-card h1 {
