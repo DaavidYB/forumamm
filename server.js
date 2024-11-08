@@ -144,13 +144,3 @@ const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
-
-
-app.get('/api/companies/:id', async (req, res) => {
-  try {
-    const company = await Company.findOne({ id: req.params.id });
-    res.json(company);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});

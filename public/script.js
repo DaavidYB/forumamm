@@ -137,22 +137,18 @@ function renderCompanies() {
 // Affichage des créneaux d'une entreprise
 async function showCompanySlots(companyId) {
     const company = companies.find(c => c.id === companyId);
-    // document.getElementById('company-name').textContent = company.name;
+    document.getElementById('company-name').textContent = company.name;
     
-    // Mettre à jour le titre de la page
-    const companyNameElement = document.getElementById('company-name');
-    companyNameElement.textContent = company.name;
-
-    // Afficher les boutons de la page
+    // Met à jour le bouton pour ouvrir l'offre PDF
     const offerButton = document.querySelector('.offer-button');
-    offerButton.textContent = 'Voir l\'offre';
-    offerButton.onclick = () => showOfferViewer(company.id);
-    offerButton.style.display = 'inline-block';
+    offerButton.onclick = () => {
+        if (company.offerPdf) {
+            window.open(company.offerPdf, '_blank');
+        } else {
+            alert("Aucune offre disponible pour cette entreprise.");
+        }
+    };
 
-    const backButton = document.querySelector('.back-button');
-    backButton.style.display = 'inline-block';
-    backButton.onclick = () => showPage('companies-page');
-    
     await fetchBookings();
     
     const grid = document.getElementById('slots-grid');
@@ -173,6 +169,7 @@ async function showCompanySlots(companyId) {
     showPage('slots-page');
 }
 
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', async () => {
     timeSlots = generateTimeSlots(); // Générer les créneaux une seule fois au chargement
@@ -180,13 +177,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     await showPage('home-page');
     await fetchCompanies();
 });
-
-async function showOfferViewer(companyId) {
-    try {
-      const response = await fetch(`/api/companies/${companyId}`);
-      const company = await response.json();
-      window.open(company.offerPdf, '_blank');
-    } catch (error) {
-      console.error('Erreur lors de la récupération des informations de l\'entreprise :', error);
-    }
-}
