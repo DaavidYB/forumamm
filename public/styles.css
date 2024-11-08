@@ -68,19 +68,16 @@ h2 {
 }
 
 
-.back-button,
-.offer-button {
+.back-button {
     padding: 0.8rem;
     font-size: 1.5rem;
-    white-space: nowrap;
-}
-
-.back-button {
     margin-left: 1rem;
 }
   
 .offer-button {
     margin-left: auto;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
 }
 
 .glass-card {
@@ -267,16 +264,9 @@ h2 {
         font-size: 2.4rem;
         line-height: 2.4rem;
     }
-    
-    .back-button,
-    .offer-button {
-    font-size: 1rem;
-    padding: 0.6rem 1rem;
-    }
 
-    .offer-button {
-    margin-left: 0;
-    margin-top: 1rem;
+    #company-name {
+        font-size: 2.5rem;
     }
 }
 
