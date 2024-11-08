@@ -71,6 +71,7 @@ h2 {
     width: 100%;
     max-width: 1200px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
@@ -79,6 +80,7 @@ h2 {
 /* Nouvelle classe pour la disposition des boutons */
 .buttons-container {
     display: flex;
+    justify-content: space-between;
     gap: 1rem;
 }
 
