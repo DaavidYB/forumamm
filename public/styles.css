@@ -105,7 +105,7 @@ h2 {
     text-align: center;
 }
 
-.main-card {
+/*.main-card {
     position: relative;
 
     display: flex;
@@ -122,7 +122,30 @@ h2 {
 .main-card h1 {
     font-size: 4.22rem;
     line-height: 4.22rem;
+}*/
+.main-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    max-width: 720px;
+    width: 90%;
+    height: 380px;
 }
+.main-card h1 {
+    font-size: 4.22rem;
+    line-height: 4.22rem;
+}
+.main-card h2 {
+    text-align: left;
+}
+
+
 .main-card .glass-button {
     position: absolute;
     left: 50%;
