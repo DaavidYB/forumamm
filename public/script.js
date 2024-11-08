@@ -139,6 +139,9 @@ async function showCompanySlots(companyId) {
     const company = companies.find(c => c.id === companyId);
     document.getElementById('company-name').textContent = company.name;
     
+    const offerButton = document.querySelector('#slots-page .offer-button');
+    offerButton.dataset.companyId = company.id;
+    
     await fetchBookings();
     
     const grid = document.getElementById('slots-grid');
