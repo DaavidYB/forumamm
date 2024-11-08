@@ -283,6 +283,10 @@ h2 {
         gap: 0.5rem;
     }
 
+    .buttons-container {
+        width: 100%;
+    }
+
     .main-card h1 {
         font-size: 2.4rem;
         line-height: 2.4rem;
