@@ -145,7 +145,7 @@ async function showCompanySlots(companyId) {
         if (company.offerPdf) {
             window.open(company.offerPdf, '_blank');
         } else {
-            alert("Aucune offre disponible pour cette entreprise.");
+            alert("Les offres de cette entreprise arrivent bientôt, mais tu peux prendre un créneau pour en discuter avec eux directement !");
         }
     };
 
@@ -172,7 +172,7 @@ async function showCompanySlots(companyId) {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', async () => {
-    timeSlots = generateTimeSlots(); // Générer les créneaux une seule fois au chargement
+    timeSlots = generateTimeSlots();
     await fetchBookings();
     await showPage('home-page');
     await fetchCompanies();
