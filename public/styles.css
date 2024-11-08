@@ -70,7 +70,6 @@ h2 {
 }
 
 .header > * {
-    flex: 1 1 auto; /* Permet aux éléments de s'étendre en fonction de l'espace */
     min-width: 150px; /* Fixe une largeur minimum pour éviter la surcompression */
 }
 
@@ -119,6 +118,9 @@ h2 {
     bottom: 20px;
     font-weight: 800;
     transform: translateX(-50%);
+}
+.header .glass-button {
+    width: clamp(auto-fit, 25%, 100%);
 }
 
 .glass-button {
