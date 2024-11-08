@@ -265,6 +265,12 @@ h2 {
         line-height: 2.4rem;
     }
 
+    .back-button,
+    .offer-button {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+    }
+
     #company-name {
         font-size: 2.5rem;
     }
