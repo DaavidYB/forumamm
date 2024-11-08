@@ -68,14 +68,14 @@ h2 {
 }
 
 
-.back-button,
-.offer-button {
+.back-button {
     padding: 0.8rem;
     font-size: 1.5rem;
-}
-
-.offer-button {
     margin-right: 1rem;
+}
+  
+.offer-button {
+    margin-left: auto;
 }
 
 .glass-card {
