@@ -295,6 +295,16 @@ h2 {
         font-size: 1.7rem;
         line-height: 1.7rem;
     }
+
+    .back-button,
+    .offer-button {
+        font-size: 0.5rem;
+        padding: 0.6rem 1rem;
+    }
+
+    #company-name {
+        font-size: 1.7rem;
+    }
 }
 
 @media screen and (max-width: 360px) {
