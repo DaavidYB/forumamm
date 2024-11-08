@@ -159,6 +159,20 @@ async function showCompanySlots(companyId) {
     showPage('slots-page');
 }
 
+async function viewOffer(companyId) {
+    try {
+      const offerResponse = await fetch(`/api/companies/${companyId}/offer`);
+      if (offerResponse.ok) {
+        window.open(offerResponse.url, '_blank');
+      } else {
+        alert('Désolé, l\'offre n\'est pas disponible pour le moment.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'offre:', error);
+      alert('Une erreur est survenue lors de la récupération de l\'offre');
+    }
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', async () => {
     timeSlots = generateTimeSlots(); // Générer les créneaux une seule fois au chargement

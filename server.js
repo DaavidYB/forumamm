@@ -55,14 +55,21 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Modèles
 const Company = mongoose.model('Company', {
+  id: Number, 
+  name: String,
+  logo: String,
+  offerPdf: String
+});
+
+// Modèles
+/*const Company = mongoose.model('Company', {
   id: Number,
   name: String,
   logo: String
 });
 
-/*const Booking = mongoose.model('Booking', {
+const Booking = mongoose.model('Booking', {
   companyId: Number,
   timeSlot: Date,
   studentName: String,
@@ -121,6 +128,19 @@ app.post('/api/bookings', async (req, res) => {
 // Route pour servir l'application frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/api/companies/:id/offer', async (req, res) => {
+  try {
+    const company = await Company.findOne({ id: req.params.id });
+    if (!company || !company.offerPdf) {
+      return res.status(404).json({ message: 'Offre non trouvée' });
+    }
+
+    res.redirect(company.offerPdf);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Gestion des erreurs
