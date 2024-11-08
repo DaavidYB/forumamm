@@ -137,10 +137,21 @@ function renderCompanies() {
 // Affichage des créneaux d'une entreprise
 async function showCompanySlots(companyId) {
     const company = companies.find(c => c.id === companyId);
-    document.getElementById('company-name').textContent = company.name;
+    // document.getElementById('company-name').textContent = company.name;
     
-    const offerButton = document.querySelector('#slots-page .offer-button');
-    offerButton.dataset.companyId = company.id;
+    // Mettre à jour le titre de la page
+    const companyNameElement = document.getElementById('company-name');
+    companyNameElement.textContent = company.name;
+
+    // Afficher les boutons de la page
+    const offerButton = document.querySelector('.offer-button');
+    offerButton.textContent = 'Voir l\'offre';
+    offerButton.onclick = () => showOfferViewer(company.id);
+    offerButton.style.display = 'inline-block';
+
+    const backButton = document.querySelector('.back-button');
+    backButton.style.display = 'inline-block';
+    backButton.onclick = () => showPage('companies-page');
     
     await fetchBookings();
     
@@ -178,4 +189,4 @@ async function showOfferViewer(companyId) {
     } catch (error) {
       console.error('Erreur lors de la récupération des informations de l\'entreprise :', error);
     }
-  }
+}
