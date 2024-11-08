@@ -82,20 +82,19 @@ h2 {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+    width: 100%;
 }
 
 .back-button {
     padding: 0.8rem;
     font-size: 1.5rem;
-   
-    flex: 1;
+    margin-left: 1rem;
 }
   
 .offer-button {
-    
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
-    flex: 1;
+    margin-left: auto;
 }
 
 .glass-card {
