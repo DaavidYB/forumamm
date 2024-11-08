@@ -277,12 +277,6 @@ h2 {
         margin-bottom: 1.5rem;
     }
 
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
     .buttons-container {
         width: 100%;
     }
