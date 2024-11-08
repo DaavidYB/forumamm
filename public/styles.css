@@ -67,7 +67,6 @@ h2 {
     align-items: center;
 }
 
-
 .back-button {
     padding: 0.8rem;
     font-size: 1.5rem;
@@ -264,16 +263,6 @@ h2 {
         font-size: 2.4rem;
         line-height: 2.4rem;
     }
-
-    .back-button,
-    .offer-button {
-        font-size: 1rem;
-        padding: 0.6rem 1rem;
-    }
-
-    #company-name {
-        font-size: 2.5rem;
-    }
 }
 
 @media screen and (max-width: 480px) {
@@ -294,16 +283,6 @@ h2 {
     .main-card h1 {
         font-size: 1.7rem;
         line-height: 1.7rem;
-    }
-
-    .back-button,
-    .offer-button {
-        font-size: 0.5rem;
-        padding: 0.6rem 1rem;
-    }
-
-    #company-name {
-        font-size: 1.7rem;
     }
 }
 
