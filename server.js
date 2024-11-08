@@ -130,19 +130,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api/companies/:id/offer', async (req, res) => {
-  try {
-    const company = await Company.findOne({ id: req.params.id });
-    if (!company || !company.offerPdf) {
-      return res.status(404).json({ message: 'Offre non trouvée' });
-    }
-
-    res.redirect(company.offerPdf);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
 // Gestion des erreurs
 app.use((err, req, res, next) => {
     console.error('🔴 Erreur:', err);
@@ -156,4 +143,14 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+});
+
+
+app.get('/api/companies/:id', async (req, res) => {
+  try {
+    const company = await Company.findOne({ id: req.params.id });
+    res.json(company);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
