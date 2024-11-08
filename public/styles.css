@@ -77,6 +77,10 @@ h2 {
     margin-bottom: 1rem;
 }
 
+.header h1 {
+    margin-bottom: 2rem;
+}
+
 /* Nouvelle classe pour la disposition des boutons */
 .buttons-container {
     display: flex;
@@ -88,13 +92,11 @@ h2 {
 .back-button {
     padding: 0.8rem;
     font-size: 1.5rem;
-    margin-left: 1rem;
 }
   
 .offer-button {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
-    margin-left: auto;
 }
 
 .glass-card {
