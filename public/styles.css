@@ -68,9 +68,14 @@ h2 {
 }
 
 
-.back-button {
+.back-button,
+.offer-button {
     padding: 0.8rem;
     font-size: 1.5rem;
+    white-space: nowrap;
+}
+
+.back-button {
     margin-left: 1rem;
 }
   
@@ -263,6 +268,21 @@ h2 {
         line-height: 2.4rem;
     }
 
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    
+      .back-button,
+      .offer-button {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+      }
+    
+      .offer-button {
+        margin-left: 0;
+        margin-top: 1rem;
+      }
 }
 
 @media screen and (max-width: 480px) {
