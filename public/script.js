@@ -32,7 +32,7 @@ function normalizeTimeSlot(date) {
 }
 
 // Gestion de la navigation
-async function showPage(pageId) {
+/*async function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
 
@@ -40,7 +40,32 @@ async function showPage(pageId) {
         await fetchCompanies();
         renderCompanies();
     }
+}*/
+
+async function showPage(pageId) {
+    const currentPage = document.querySelector(".page:not(.hidden)");
+    const nextPage = document.getElementById(pageId);
+
+    // Ajouter la classe de fondu pour l'animation de sortie
+    currentPage.classList.add("fade-out");
+    
+    setTimeout(() => {
+        currentPage.classList.add("hidden");
+        currentPage.classList.remove("fade-out");
+
+        nextPage.classList.remove("hidden");
+        nextPage.classList.add("fade-in");
+
+        setTimeout(() => nextPage.classList.remove("fade-in"), 500);
+    }, 500);
+
+    if (pageId === 'companies-page') {
+        await fetchCompanies();
+        renderCompanies();
+    }
 }
+
+
 
 async function fetchCompanies() {
     try {

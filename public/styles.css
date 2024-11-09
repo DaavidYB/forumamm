@@ -33,6 +33,37 @@ h2 {
     margin-bottom: 2rem;
 }
 
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.page {
+
+    transition: opacity 0.5s ease;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
 .page {
     position: relative;
 
@@ -118,10 +149,6 @@ h2 {
     height: 380px;
 
     padding-left: 8%;
-}
-.main-card h1 {
-    font-size: 4.22rem;
-    line-height: 4.22rem;
 }*/
 .main-card {
     position: relative;
