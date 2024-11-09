@@ -46,18 +46,29 @@ async function showPage(pageId) {
     const currentPage = document.querySelector(".page:not(.hidden)");
     const nextPage = document.getElementById(pageId);
 
-    // Ajouter la classe de fondu pour l'animation de sortie
-    currentPage.classList.add("fade-out");
-    
-    setTimeout(() => {
+    if (currentPage.id === 'home-page') {
+        // Si c'est la page d'accueil, uniquement l'animation de fondu d'entrée
         currentPage.classList.add("hidden");
-        currentPage.classList.remove("fade-out");
-
         nextPage.classList.remove("hidden");
         nextPage.classList.add("fade-in");
 
+        // Supprimer la classe fade-in après l'animation
         setTimeout(() => nextPage.classList.remove("fade-in"), 500);
-    }, 500);
+    } else {
+        // Ajouter la classe de fondu pour l'animation de sortie
+        currentPage.classList.add("fade-out");
+        
+        setTimeout(() => {
+            currentPage.classList.add("hidden");
+            currentPage.classList.remove("fade-out");
+
+            nextPage.classList.remove("hidden");
+            nextPage.classList.add("fade-in");
+
+            // Supprimer la classe fade-in après l'animation
+            setTimeout(() => nextPage.classList.remove("fade-in"), 500);
+        }, 500);
+    }
 
     if (pageId === 'companies-page') {
         await fetchCompanies();
