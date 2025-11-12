@@ -5,7 +5,7 @@ const path = require('path');
 
 const app = express();
 
-const REFERENCE_DATE = new Date('2024-11-14');
+const REFERENCE_DATE = new Date('2025-11-13');
 REFERENCE_DATE.setHours(0, 0, 0, 0);
 
 // Configuration pour la production

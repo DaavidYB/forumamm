@@ -1,6 +1,10 @@
 // script.js
-const REFERENCE_DATE = new Date('2024-11-14');
+const REFERENCE_DATE = new Date('2025-11-13');
 REFERENCE_DATE.setHours(0, 0, 0, 0);
+
+const INTERVIEW_DURATION_MINUTES = 10;
+const BREAK_DURATION_MINUTES = 5;
+const SLOT_INTERVAL_MINUTES = INTERVIEW_DURATION_MINUTES + BREAK_DURATION_MINUTES;
 
 let companies = [];
 let bookings = new Map();
@@ -11,15 +15,15 @@ function generateTimeSlots() {
     const slots = [];
     
     const startTime = new Date(REFERENCE_DATE);
-    startTime.setHours(10, 0, 0);
+    startTime.setHours(14, 0, 0);
     const endTime = new Date(REFERENCE_DATE);
-    endTime.setHours(11, 10, 0);
+    endTime.setHours(15, 30, 0);
 
     let currentTime = new Date(startTime);
     
     while (currentTime < endTime) {
         slots.push(new Date(currentTime));
-        currentTime.setMinutes(currentTime.getMinutes() + 10);
+        currentTime.setMinutes(currentTime.getMinutes() + SLOT_INTERVAL_MINUTES);
     }
     return slots;
 }
@@ -191,13 +195,17 @@ async function showCompanySlots(companyId) {
     grid.innerHTML = timeSlots.map(time => {
         const normalizedTime = normalizeTimeSlot(time);
         const booking = bookings.get(`${companyId}-${normalizedTime.getTime()}`);
-        const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        // const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const endTime = new Date(normalizedTime);
+        endTime.setMinutes(endTime.getMinutes() + INTERVIEW_DURATION_MINUTES);
+        const startStr = normalizedTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const endStr = endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         const isBooked = booking !== undefined;
         
         return `
             <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${normalizedTime.getTime()}')"` : ''}>
-                <h3>${timeStr}</h3>
-                <p>${isBooked ? booking.studentName : 'Disponible'}</p>
+                <h3>${startStr} - ${endStr}</h3>
+                <p>${isBooked ? booking.studentName : 'Disponible (10 min + 5 min pause)'}</p>
             </div>
         `;
     }).join('');
