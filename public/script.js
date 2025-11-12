@@ -205,7 +205,7 @@ async function showCompanySlots(companyId) {
         return `
             <div class="slot-card ${isBooked ? 'booked' : ''}" ${!isBooked ? `onclick="showBookingModal(${companyId}, '${normalizedTime.getTime()}')"` : ''}>
                 <h3>${startStr} - ${endStr}</h3>
-                <p>${isBooked ? booking.studentName : 'Disponible (10 min + 5 min pause)'}</p>
+                <p>${isBooked ? booking.studentName : 'Disponible'}</p>
             </div>
         `;
     }).join('');
