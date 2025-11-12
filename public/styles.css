@@ -20,6 +20,9 @@ body {
     color: white;
 
     background-image: url(./assets/fond.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 h1 {
     font-weight: 800;
